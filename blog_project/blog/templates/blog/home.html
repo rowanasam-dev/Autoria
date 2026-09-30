@@ -1,0 +1,63 @@
+{% extends 'blog/base.html' %}
+
+{% block hero %}
+<section class="hero">
+    <p class="hero-eyebrow">The car community</p>
+    <h1>Discover. Compare. <span class="gold">Buy with confidence.</span></h1>
+    <p class="hero-sub">Honest reviews, cars for sale, and questions answered by people who know cars.</p>
+</section>
+{% endblock %}
+
+{% block content %}
+<div class="section-head">
+    <h2>Latest posts</h2>
+    <div class="filters">
+        <a href="{% url 'home' %}" class="{% if not active_category %}active{% endif %}">All</a>
+        {% for value, label in categories %}
+            <a href="?category={{ value }}" class="{% if active_category == value %}active{% endif %}">{{ label }}</a>
+        {% endfor %}
+    </div>
+</div>
+
+<input type="search" id="search-input" class="search-box"
+       placeholder="🔍 Search by name, brand or year...">
+
+<div class="posts-grid">
+    {% for post in page_obj %}
+        <article class="card">
+            <a href="{% url 'post_detail' post.pk %}" class="card-img-link">
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="card-img" loading="lazy">
+                {% else %}
+                    <div class="card-img placeholder">🚗</div>
+                {% endif %}
+            </a>
+            <span class="badge badge-{{ post.category }}">{{ post.get_category_display }}</span>
+            <h3><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
+            <p class="meta">{{ post.brand }} <span class="dot">•</span> {{ post.model_year }}</p>
+            {% if post.price %}
+                <p class="price">{{ post.price|floatformat:0 }} <small>EGP</small></p>
+            {% endif %}
+            <p class="excerpt">{{ post.body|truncatewords:22 }}</p>
+            <div class="card-footer">
+                <small>{{ post.author.username }} · {{ post.created_at|date:"M d, Y" }} · 💬 {{ post.comments_count }}</small>
+                <a href="{% url 'post_detail' post.pk %}" class="link-gold">Read more →</a>
+            </div>
+        </article>
+    {% empty %}
+        <p class="empty">No posts yet. Be the first to add one!</p>
+    {% endfor %}
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}">← Prev</a>
+    {% endif %}
+    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if active_category %}&category={{ active_category }}{% endif %}">Next →</a>
+    {% endif %}
+</nav>
+{% endif %}
+{% endblock %}

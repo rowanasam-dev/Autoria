@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Autoria | The Car Community{% endblock %}</title>
+
+    <script>
+        document.documentElement.dataset.theme = localStorage.getItem('theme') || 'dark';
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'blog/css/style.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <a href="{% url 'home' %}" class="logo"><span class="logo-mark">◆</span> Autoria</a>
+
+        <nav id="nav-links" class="nav-links">
+            {% if user.is_authenticated %}
+                <span class="welcome">Hi, {{ user.username }}</span>
+                <a href="{% url 'post_create' %}" class="btn btn-gold btn-sm">+ New post</a>
+                <form method="post" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="link-btn">Log out</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Log in</a>
+                <a href="{% url 'register' %}" class="btn btn-gold btn-sm">Sign up</a>
+            {% endif %}
+        </nav>
+
+        <div class="nav-actions">
+            <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+            <button id="menu-toggle" class="menu-toggle" aria-label="Menu">☰</button>
+        </div>
+    </header>
+
+    {% block hero %}{% endblock %}
+
+    <main class="container">
+        {% for message in messages %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <span class="logo-mark">◆</span> Autoria, a community for car lovers
+    </footer>
+
+    <script src="{% static 'blog/js/main.js' %}" defer></script>
+</body>
+</html>

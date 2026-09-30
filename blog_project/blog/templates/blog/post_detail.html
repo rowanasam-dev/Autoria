@@ -1,0 +1,67 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}{{ post.title }} | Autoria{% endblock %}
+
+{% block content %}
+<a href="{% url 'home' %}" class="back">← Back to home</a>
+
+<article class="post-detail">
+    {% if post.image %}
+        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="post-image">
+    {% endif %}
+
+    <span class="badge badge-{{ post.category }}">{{ post.get_category_display }}</span>
+    <h1>{{ post.title }}</h1>
+
+    <p class="meta">
+        {{ post.brand }} <span class="dot">•</span> {{ post.model_year }}
+        <span class="dot">•</span> by {{ post.author.username }}
+        <span class="dot">•</span> {{ post.created_at|date:"M d, Y" }}
+    </p>
+
+    {% if post.price %}
+        <p class="price">{{ post.price|floatformat:0 }} <small>EGP</small></p>
+    {% endif %}
+
+    <div class="post-body">{{ post.body|linebreaks }}</div>
+
+    {% if user == post.author %}
+        <div class="post-actions">
+            <a href="{% url 'post_update' post.pk %}" class="btn btn-gold btn-sm">✏ Edit post</a>
+            <form method="post" action="{% url 'post_delete' post.pk %}"
+                  data-confirm="Are you sure you want to delete this post?">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">🗑 Delete post</button>
+            </form>
+        </div>
+    {% endif %}
+</article>
+
+<section class="comments">
+    <h2 class="comments-title">Comments ({{ comments|length }})</h2>
+
+    {% for comment in comments %}
+        <div class="comment">
+            <p class="author">{{ comment.author.username }}
+                <small>{{ comment.created_at|date:"M d, Y H:i" }}</small>
+            </p>
+            <p>{{ comment.content|linebreaksbr }}</p>
+        </div>
+    {% empty %}
+        <p class="empty">No comments yet. Write the first one!</p>
+    {% endfor %}
+
+    {% if user.is_authenticated %}
+        <form method="post" class="form-box comment-form">
+            {% csrf_token %}
+            {% include 'blog/_form_fields.html' %}
+            <button type="submit" class="btn btn-gold">Post comment</button>
+        </form>
+    {% else %}
+        <p class="login-note">
+            <a href="{% url 'login' %}?next={{ request.path }}" class="link-gold">Log in</a>
+            to write a comment.
+        </p>
+    {% endif %}
+</section>
+{% endblock %}

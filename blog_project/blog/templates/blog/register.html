@@ -1,0 +1,12 @@
+{% extends 'blog/base.html' %}
+{% block title %}Sign up | Autoria{% endblock %}
+
+{% block content %}
+<form method="post" class="form-box">
+    {% csrf_token %}
+    <h2>Create your account</h2>
+    {% include 'blog/_form_fields.html' %}
+    <button type="submit" class="btn btn-gold btn-block">Sign up</button>
+    <p class="form-note">Already have an account? <a href="{% url 'login' %}" class="link-gold">Log in</a></p>
+</form>
+{% endblock %}

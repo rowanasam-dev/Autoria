@@ -1,0 +1,13 @@
+{% extends 'blog/base.html' %}
+{% block title %}{% if editing %}Edit post{% else %}New post{% endif %} | Autoria{% endblock %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="form-box form-wide">
+    {% csrf_token %}
+    <h2>{% if editing %}Edit your post{% else %}Add a new post{% endif %}</h2>
+    {% include 'blog/_form_fields.html' %}
+    <button type="submit" class="btn btn-gold btn-block">
+        {% if editing %}Save changes{% else %}Publish{% endif %}
+    </button>
+</form>
+{% endblock %}
